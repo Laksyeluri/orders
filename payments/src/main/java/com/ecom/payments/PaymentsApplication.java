@@ -8,7 +8,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class PaymentsApplication {
 
-
 	public static void main(String[] args) {
 		SpringApplication.run(PaymentsApplication.class, args);
 	}

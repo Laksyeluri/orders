@@ -6,9 +6,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.ecom.paymentexecutor.config.RabbitMQConfiguration;
 import com.ecom.paymentexecutor.model.Payment;
 import com.ecom.paymentexecutor.service.PaymentExecutorService;
+import com.ecom.paymentexecutor.util.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +28,10 @@ public class PaymentExecutorController {
 	@Autowired
 	PaymentExecutorService paymentExecutorService;
 
-	@RabbitListener(queues = RabbitMQConfiguration.INPUT_QUEUE)
+	@RabbitListener(queues = Constants.PAYMENT_QUEUE)
 	public void processMessage(String message) {
 		try {
-			log.info("Received message from {} and message:{} ", RabbitMQConfiguration.INPUT_QUEUE, message);
+			log.info("Received message from {} and message:{} ", Constants.PAYMENT_QUEUE, message);
 			Payment payment = mapper.readValue(message, Payment.class);
 			paymentExecutorService.processPayment(payment);
 		} catch (Exception e) {

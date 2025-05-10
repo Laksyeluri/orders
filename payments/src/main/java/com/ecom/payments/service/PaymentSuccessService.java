@@ -33,7 +33,11 @@ public class PaymentSuccessService {
 		Payment payment = new Payment();
 		try {
 			log.info("Received message from executor: {}", message);
-			payment = mapper.readValue(message, Payment.class);
+			String cleanedJson = message.replaceAll("^\"|\"$", "") // Removes extra quotes at start and end
+					.replace("\\", ""); // Fixes escaping issues
+
+			log.info("Json Payload:{}", cleanedJson);
+			payment = mapper.readValue(cleanedJson, Payment.class);
 			Optional<Payment> existedPayment = paymentRepository.findById(payment.getId());
 			if (existedPayment.isPresent()) {
 				Payment payment1 = existedPayment.get();
