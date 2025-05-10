@@ -22,6 +22,8 @@ public class PaymentHandlerService {
 
 	private static final String PAYMENT_QUEUE_DLQ = "payment_queue.dlq";
 
+	public static final String PAYMENT_EXECUTOR_QUEUE = "processed_payments_queue";
+
 	@Autowired
 	RabbitTemplate rabbitTemplate;
 
@@ -36,6 +38,28 @@ public class PaymentHandlerService {
 
 	@Autowired
 	private PaymentService paymentService;
+
+	@RabbitListener(queues = PAYMENT_EXECUTOR_QUEUE)
+	public void processMessage(String message) {
+//		Payment payment = new Payment();
+		try {
+			log.info("Received message from executor: {}", message);
+			String cleanedJson = message.replaceAll("^\"|\"$", "") // Removes extra quotes at start and end
+					.replace("\\", ""); // Fixes escaping issues
+
+			log.info("Json Payload:{}", cleanedJson);
+//			payment = mapper.readValue(cleanedJson, Payment.class);
+
+			rabbitTemplate.convertAndSend(RabbitMQConfiguration.PAYMENT_EXCHANGE,
+					RabbitMQConfiguration.PAYMENT_SUCCESS_ROUTING_KEY, cleanedJson);
+
+			saveToDB(cleanedJson, "SUCCESS");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	@RabbitListener(queues = PAYMENT_QUEUE_DLQ)
 	public void processFailedPayment(Message message, String payload) {
@@ -78,7 +102,11 @@ public class PaymentHandlerService {
 //
 //			// Optional: Send alert
 			sendFailureAlert(orderId);
+			saveToDB(cleanedJson, "FAILED");
 		}
+	}
+
+	private void saveToDB(String cleanedJson, String status) {
 		PaymentRecord paymentRecord = null;
 		try {
 			paymentRecord = mapper.readValue(cleanedJson, PaymentRecord.class);
@@ -87,6 +115,7 @@ public class PaymentHandlerService {
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
+		paymentRecord.setStatus(status);
 		paymentService.saveToDatabase(paymentRecord);
 	}
 

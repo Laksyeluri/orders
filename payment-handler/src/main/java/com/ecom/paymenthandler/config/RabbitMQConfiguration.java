@@ -14,9 +14,13 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfiguration {
 
 	public static final String PAYMENT_ROUTING_KEY = "payment";
-	public static final String PAYMENT_FAILURE_ROUTING_KEY = PAYMENT_ROUTING_KEY + ".failure";
 	public static final String PAYMENT_EXCHANGE = "payment_exchange";
+
 	public static final String PAYMENT_FAILURE_QUEUE = "payment_failure_queue";
+	public static final String PAYMENT_FAILURE_ROUTING_KEY = PAYMENT_ROUTING_KEY + ".failure";
+
+	public static final String PAYMENT_SUCCESS_QUEUE = "payment_success_queue";
+	public static final String PAYMENT_SUCCESS_ROUTING_KEY = PAYMENT_ROUTING_KEY + ".success";
 
 	public static final String PAYMENT_RETRY_EXCHANGE = "payment_retry_exchange";
 	public static final String PAYMENT_RETRY_ROUTING_QUEUE = "payment_retry_queue";
@@ -46,6 +50,11 @@ public class RabbitMQConfiguration {
 	}
 
 	@Bean
+	Queue paymentSuccessQueue() {
+		return QueueBuilder.durable(PAYMENT_SUCCESS_QUEUE).build();
+	}
+
+	@Bean
 	Binding retryBinding() {
 		return BindingBuilder.bind(retryQueue()).to(retryExchange()).with(PAYMENT_RETRY_ROUTING_KEY);
 	}
@@ -53,6 +62,11 @@ public class RabbitMQConfiguration {
 	@Bean
 	Binding paymentFailureBinding() {
 		return BindingBuilder.bind(paymentFailureQueue()).to(paymentExchange()).with(PAYMENT_FAILURE_ROUTING_KEY);
+	}
+
+	@Bean
+	Binding paymentSuccessBinding() {
+		return BindingBuilder.bind(paymentSuccessQueue()).to(paymentExchange()).with(PAYMENT_SUCCESS_ROUTING_KEY);
 	}
 
 	@Bean

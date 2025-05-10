@@ -10,6 +10,7 @@ import com.ecom.payments.client.OrderClient;
 import com.ecom.payments.model.Order;
 import com.ecom.payments.model.Payment;
 import com.ecom.payments.repository.PaymentRepository;
+import com.ecom.payments.util.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +27,7 @@ public class PaymentSuccessService {
 	@Autowired
 	ObjectMapper mapper;
 
-	public static final String PAYMENT_EXECUTOR_QUEUE = "processed_payments_queue";
-
-	@RabbitListener(queues = PAYMENT_EXECUTOR_QUEUE)
+	@RabbitListener(queues = Constants.PAYMENT_SUCCESS_QUEUE)
 	public void processMessage(String message) {
 		Payment payment = new Payment();
 		try {
