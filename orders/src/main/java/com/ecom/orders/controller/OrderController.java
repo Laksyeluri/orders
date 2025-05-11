@@ -1,8 +1,11 @@
 package com.ecom.orders.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,9 +31,13 @@ public class OrderController {
 	@Autowired
 	private OrderService orderService;
 
+	@Autowired
+	Environment environment;
+
 	@PostMapping
 	public ResponseEntity<Order> placeOrder(@RequestBody Order order) {
 		Order createdOrder = orderService.placeOrder(order);
+		log.info("Port: {}", environment.getProperty("local.server.port"));
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
 	}
 
@@ -62,7 +69,7 @@ public class OrderController {
 		List<Order> failedOrders = orderService.getFailedOrders();
 		return ResponseEntity.ok(failedOrders);
 	}
-	
+
 	@GetMapping("/success")
 	public ResponseEntity<List<Order>> getSuccessOrders() {
 		List<Order> successOrders = orderService.getSuccessOrders();

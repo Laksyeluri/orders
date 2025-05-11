@@ -10,24 +10,11 @@ import com.ecom.paymentexecutor.util.Constants;
 @Configuration
 public class RabbitMQConfiguration {
 
-//	public static final String INPUT_EXCHANGE = "payment_exchange";
-//	public static final String INPUT_QUEUE = "payment_queue";
-//	public static final String PAYMENTROUTING_KEY = "payment";
-//
-//	public static final String EXCHANGE_NAME = "processed_payments_exchange";
-//	public static final String QUEUE_NAME = "processed_payments_queue";
-//
-//	public static final String DLX_NAME = INPUT_EXCHANGE + ".dlx";
-//
-//	public static final String DLQ_NAME = INPUT_QUEUE + ".dlq";
-//
-//	public static final String DLX_ROUTING_KEY = PAYMENTROUTING_KEY + ".failures";
-
 	// MainQueue with DL configs
 	@Bean
 	Queue paymentQueue() {
 		return QueueBuilder.durable(Constants.PAYMENT_QUEUE).withArgument("x-dead-letter-exchange", Constants.DLX_NAME)
-				.withArgument("x-dead-letter-routing-key", Constants.DLQ_NAME).build();
+				.withArgument("x-dead-letter-routing-key", Constants.DLX_ROUTING_KEY).build();
 	}
 
 	// processed-payments configs
