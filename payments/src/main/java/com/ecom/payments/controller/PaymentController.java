@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,9 +32,13 @@ public class PaymentController {
 
 	@Autowired
 	PaymentService paymentService;
+	
+	@Autowired
+	Environment environment;
 
 	@PostMapping("")
 	public ResponseEntity<Payment> makePayment(@RequestBody Payment payment) {
+		log.info("Port: {}", environment.getProperty("local.server.port"));
 		// Payment logic
 		try {
 			return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.makePayment(payment));
@@ -45,11 +50,13 @@ public class PaymentController {
 
 	@DeleteMapping("/{id}")
 	public void deletePayment(@PathVariable Long id) {
+		log.info("Port: {}", environment.getProperty("local.server.port"));
 		paymentService.deleteByOrderId(id);
 	}
 
 	@GetMapping("/{paymentId}")
 	public ResponseEntity<Payment> getPayment(@PathVariable Long paymentId) {
+		log.info("Port: {}", environment.getProperty("local.server.port"));
 		// Get payment logic
 		try {
 			return ResponseEntity.status(HttpStatus.FOUND).body(paymentService.getPayment(paymentId));
@@ -61,6 +68,7 @@ public class PaymentController {
 
 	@GetMapping("/order/{orderId}")
 	public ResponseEntity<Payment> getPaymentByOrder(@PathVariable Long orderId) {
+		log.info("Port: {}", environment.getProperty("local.server.port"));
 		// Get payment by order logic
 		try {
 			return ResponseEntity.ok(paymentService.getPaymentByOrderId(orderId));

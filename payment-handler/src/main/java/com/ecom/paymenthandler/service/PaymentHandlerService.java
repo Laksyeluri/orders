@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.ecom.paymenthandler.config.RabbitMQConfiguration;
@@ -29,6 +30,9 @@ public class PaymentHandlerService {
 
 	@Autowired
 	ObjectMapper mapper;
+	
+	@Autowired
+	Environment environment;
 
 //	@Autowired
 //	PaymentService paymentService;
@@ -41,6 +45,7 @@ public class PaymentHandlerService {
 
 	@RabbitListener(queues = PAYMENT_EXECUTOR_QUEUE)
 	public void processMessage(String message) {
+		log.info("Port: {}", environment.getProperty("local.server.port"));
 //		Payment payment = new Payment();
 		try {
 			log.info("Received message from executor: {}", message);
@@ -63,6 +68,7 @@ public class PaymentHandlerService {
 
 	@RabbitListener(queues = PAYMENT_QUEUE_DLQ)
 	public void processFailedPayment(Message message, String payload) {
+		log.info("Port: {}", environment.getProperty("local.server.port"));
 		log.info("{} Message properties:{}", PAYMENT_QUEUE_DLQ, message.getMessageProperties());
 		String orderId = new String(message.getBody());
 

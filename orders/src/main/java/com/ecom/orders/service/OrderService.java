@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.stereotype.Service;
 
 import com.ecom.orders.client.PaymentClient;
@@ -19,6 +20,7 @@ public class OrderService {
 	OrderRepository orderRepository;
 
 	@Autowired
+//	@LoadBalanced
 	PaymentClient paymentClient;
 
 	public Order placeOrder(Order order) {

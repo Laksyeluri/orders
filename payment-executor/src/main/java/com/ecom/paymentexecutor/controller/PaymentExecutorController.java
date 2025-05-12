@@ -4,6 +4,7 @@ import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 
 import com.ecom.paymentexecutor.model.Payment;
@@ -24,12 +25,16 @@ public class PaymentExecutorController {
 	}
 
 	ObjectMapper mapper = new ObjectMapper();
+	
+	@Autowired
+	Environment environment;
 
 	@Autowired
 	PaymentExecutorService paymentExecutorService;
 
 	@RabbitListener(queues = Constants.PAYMENT_QUEUE)
 	public void processMessage(String message) {
+		log.info("Port: {}", environment.getProperty("local.server.port"));
 		try {
 			log.info("Received message from {} and message:{} ", Constants.PAYMENT_QUEUE, message);
 			Payment payment = mapper.readValue(message, Payment.class);

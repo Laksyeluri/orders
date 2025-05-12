@@ -36,6 +36,7 @@ public class OrderController {
 
 	@PostMapping
 	public ResponseEntity<Order> placeOrder(@RequestBody Order order) {
+		log.info("port:"+environment.getProperty("local.server.port"));
 		Order createdOrder = orderService.placeOrder(order);
 		log.info("Port: {}", environment.getProperty("local.server.port"));
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
@@ -43,16 +44,19 @@ public class OrderController {
 
 	@GetMapping
 	public ResponseEntity<List<Order>> getAllOrders() {
+		log.info("port:"+environment.getProperty("local.server.port"));
 		return ResponseEntity.ok(orderService.getAllOrders());
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+		log.info("port:"+environment.getProperty("local.server.port"));
 		return orderService.getOrderById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
 	@PutMapping
 	public ResponseEntity<Order> updateOrder(@RequestBody Order order) {
+		log.info("port:"+environment.getProperty("local.server.port"));
 		log.info("updated order:{}", order);
 		Order createdOrder = orderService.updateOrder(order);
 		return ResponseEntity.ok(createdOrder);
@@ -60,18 +64,21 @@ public class OrderController {
 
 	@DeleteMapping("/{id}")
 	public void deleteOrder(@PathVariable Long id) {
+		log.info("port:"+environment.getProperty("local.server.port"));
 		log.info("Deleting order:{}", id);
 		orderService.deleteOrder(id);
 	}
 
 	@GetMapping("/failed")
 	public ResponseEntity<List<Order>> getFailedOrders() {
+		log.info("port:"+environment.getProperty("local.server.port"));
 		List<Order> failedOrders = orderService.getFailedOrders();
 		return ResponseEntity.ok(failedOrders);
 	}
 
 	@GetMapping("/success")
 	public ResponseEntity<List<Order>> getSuccessOrders() {
+		log.info("port:"+environment.getProperty("local.server.port"));
 		List<Order> successOrders = orderService.getSuccessOrders();
 		return ResponseEntity.ok(successOrders);
 	}
